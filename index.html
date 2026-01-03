@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>News Template</title>
+
+  <!-- Google Font (Variable weights 100–900) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@100..900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+
+  <!-- ===== CONTROLS ===== -->
+  <div class="controls">
+    <textarea id="headlineInput" rows="4">৩১ ডিসেম্বর থেকে ২ জানুয়ারি পর্যন্ত ঢাকায় রাষ্ট্রীয় শোক —
+এই সময় [[আতশবাজি]] ও {r:আকাশলণ্ঠন} {b:নিষিদ্ধ}।</textarea>
+
+    <input type="text" id="sourceTailInput" value="The Business Standard" />
+    <input type="file" id="imageInput" accept="image/*" />
+    <button id="downloadBtn" type="button">Download PNG</button>
+  </div>
+
+  <!-- ===== RESPONSIVE PREVIEW STAGE ===== -->
+  <div class="stage">
+    <div id="template">
+
+      <div class="header">
+        <div class="logo">
+          <img src="./assets/logo-white.png" alt="THE SCROLL" />
+        </div>
+        <div class="source">
+          @TheScrollBD | Source: <span id="sourceTail">The Business Standard</span>
+        </div>
+      </div>
+
+      <div class="headline" id="headline"></div>
+
+      <div class="image-box">
+        <img id="mainImage" src="./assets/placeholder.png" alt="Main" />
+      </div>
+
+      <div class="footer">
+        <img src="./assets/footer-ad.png" alt="Footer Ad" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- IMPORTANT: Library first, then app.js -->
+  <script src="./vendor/html-to-image.js"></script>
+  <script src="./app.js"></script>
+
+</body>
+</html>

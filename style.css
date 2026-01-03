@@ -1,0 +1,175 @@
+:root{
+  --bn-font: "Noto Sans Bengali", sans-serif;
+}
+
+*{ box-sizing: border-box; }
+
+body{
+  background:#222;
+  font-family: var(--bn-font);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  padding:20px;
+}
+
+/* ===== PREVIEW STAGE (Responsive Scaling) ===== */
+.stage{
+  width: min(1080px, 100%);
+  display:flex;
+  justify-content:center;
+}
+
+/* This keeps the real template size for export,
+   but scales it visually on smaller screens */
+#template{
+  width:1080px;
+  height:1350px;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+
+  transform-origin: top center;
+}
+
+/* ===== HEADER ===== */
+.header{
+  background:#000;
+  color:#fff;
+  padding:24px 32px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo img{
+  height:42px;
+  width:auto;
+  display:block;
+}
+
+.source{
+  font-family: var(--bn-font);
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+
+  font-size:18px;
+  opacity:.9;
+  text-align:right;
+}
+
+/* ===== HEADLINE ===== */
+.headline{
+  font-family: var(--bn-font);
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+
+  padding:36px 32px;
+  font-size:60px;
+  line-height:1.25;
+  color:#000;
+}
+
+.hl-yellow{ background:yellow; padding:0 6px; border-radius:6px; }
+.hl-red{ color:#d40000; font-weight:900; }
+.hl-blue{ color:#0a2cff; font-weight:900; }
+
+/* ===== IMAGE AREA ===== */
+.image-box{
+  width:100%;
+  height:900px;
+  background:#0a2cff;
+  overflow:hidden;
+}
+.image-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  margin:0;
+  padding:0;
+  line-height:0;
+}
+.footer img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+/* ===== CONTROLS ===== */
+.controls{
+  width: min(1080px, 100%);
+  background:#111;
+  padding:16px;
+  border-radius:8px;
+  color:#fff;
+
+  font-family: var(--bn-font);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.controls textarea,
+.controls input,
+.controls button{
+  width:100%;
+  margin-top:8px;
+  padding:10px;
+  font-size:16px;
+
+  font-family: var(--bn-font);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+button{
+  background:#ff2b2b;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+}
+button:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+/* ===== MOBILE: scale template preview only ===== */
+@media (max-width: 1150px){
+  body{ padding:12px; }
+  /* Scale down template to fit screen width */
+  #template{
+    transform: scale(calc((100vw - 24px) / 1080));
+  }
+}
+
+/* Very small screens: reduce control text a bit */
+@media (max-width: 480px){
+  .controls textarea,
+  .controls input,
+  .controls button{
+    font-size:14px;
+    padding:9px;
+  }
+}
