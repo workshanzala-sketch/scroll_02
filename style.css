@@ -21,23 +21,21 @@ body{
   padding:20px;
 }
 
-/* ===== PREVIEW STAGE (Responsive Scaling) ===== */
+/* Preview wrapper */
 .stage{
   width: min(1080px, 100%);
   display:flex;
   justify-content:center;
+  transform-origin: top center;
 }
 
-/* This keeps the real template size for export,
-   but scales it visually on smaller screens */
+/* Keep template always real size (export size) */
 #template{
   width:1080px;
   height:1350px;
   background:#fff;
   position:relative;
   overflow:hidden;
-
-  transform-origin: top center;
 }
 
 /* ===== HEADER ===== */
@@ -156,14 +154,14 @@ button:disabled{
 }
 
 /* ===== MOBILE: scale template preview only ===== */
+/* Scale ONLY the stage on smaller screens */
 @media (max-width: 1150px){
   body{ padding:12px; }
-  /* Scale down template to fit screen width */
-  #template{
+
+  .stage{
     transform: scale(calc((100vw - 24px) / 1080));
   }
 }
-
 /* Very small screens: reduce control text a bit */
 @media (max-width: 480px){
   .controls textarea,

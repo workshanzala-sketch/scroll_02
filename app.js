@@ -1,6 +1,5 @@
 console.log("htmlToImage exists?", !!window.htmlToImage);
 
-
 function escapeHtml(str) {
   return str
     .replaceAll('&', '&amp;')
@@ -19,6 +18,7 @@ function parseMarkup(raw) {
   return s;
 }
 
+// ===== Headline =====
 const headlineInput = document.getElementById('headlineInput');
 const headlineEl = document.getElementById('headline');
 
@@ -28,6 +28,7 @@ function updateHeadline() {
 headlineInput.addEventListener('input', updateHeadline);
 updateHeadline();
 
+// ===== Source Tail =====
 const sourceTailInput = document.getElementById('sourceTailInput');
 const sourceTailEl = document.getElementById('sourceTail');
 
@@ -37,30 +38,32 @@ function updateSourceTail() {
 sourceTailInput.addEventListener('input', updateSourceTail);
 updateSourceTail();
 
+// ===== Image Upload =====
 document.getElementById('imageInput').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
   reader.onload = () => {
-    document.getElementById('mainImage').src = reader.result; // dataURL = safe for export
+    document.getElementById('mainImage').src = reader.result; // dataURL
   };
   reader.readAsDataURL(file);
 });
 
+// ===== Helpers =====
 async function waitForImages(node) {
   const imgs = node.querySelectorAll('img');
 
   await Promise.all([...imgs].map(img => {
-    // If image missing (404), naturalWidth stays 0
-    if (img.complete) return Promise.resolve();
+    // already loaded
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+
     return new Promise(res => {
       img.onload = () => res();
-      img.onerror = () => res();
+      img.onerror = () => res(); // don't block forever
     });
   }));
 
-  // hard-check for broken images
   const broken = [...imgs].filter(i => i.naturalWidth === 0);
   if (broken.length) {
     const names = broken.map(b => b.getAttribute('src')).join('\n');
@@ -77,40 +80,72 @@ function downloadDataUrl(dataUrl, filename) {
   a.remove();
 }
 
+// ✅ Export-safe PNG (ignores mobile scaling by exporting a clone)
 async function downloadPNG() {
-  const node = document.getElementById('template');
   const btn = document.getElementById('downloadBtn');
+  const original = document.getElementById('template');
 
   try {
     btn.disabled = true;
     btn.textContent = "Exporting...";
 
-    // library check
     if (!window.htmlToImage) {
-    throw new Error("html-to-image not found. Make sure ./vendor/html-to-image.min.js is loaded.");
+      throw new Error("html-to-image not found. Make sure ./vendor/html-to-image.js is loaded.");
     }
 
-
-    // wait for fonts (Bangla)
+    // Wait for Bangla font rendering
     if (document.fonts?.ready) await document.fonts.ready;
 
-    // wait for images + ensure none broken
-    await waitForImages(node);
+    // Create offscreen host (no scaling parents)
+    const exportHost = document.createElement('div');
+    exportHost.style.position = 'fixed';
+    exportHost.style.left = '-100000px';
+    exportHost.style.top = '0';
+    exportHost.style.width = '1080px';
+    exportHost.style.height = '1350px';
+    exportHost.style.background = '#ffffff';
+    exportHost.style.zIndex = '-1';
 
-    const dataUrl = await window.htmlToImage.toPng(node, {
+    // Clone template
+    const clone = original.cloneNode(true);
+    clone.style.transform = 'none';
+    clone.style.width = '1080px';
+    clone.style.height = '1350px';
+
+    exportHost.appendChild(clone);
+    document.body.appendChild(exportHost);
+
+    // Copy live content into clone (important for current edits)
+    const origHeadline = original.querySelector('#headline');
+    const cloneHeadline = clone.querySelector('#headline');
+    if (origHeadline && cloneHeadline) cloneHeadline.innerHTML = origHeadline.innerHTML;
+
+    const origSourceTail = original.querySelector('#sourceTail');
+    const cloneSourceTail = clone.querySelector('#sourceTail');
+    if (origSourceTail && cloneSourceTail) cloneSourceTail.textContent = origSourceTail.textContent;
+
+    const origMainImg = original.querySelector('#mainImage');
+    const cloneMainImg = clone.querySelector('#mainImage');
+    if (origMainImg && cloneMainImg) cloneMainImg.src = origMainImg.src;
+
+    // Wait for images inside clone
+    await waitForImages(clone);
+
+    // Export clone at fixed size (always correct)
+    const dataUrl = await window.htmlToImage.toPng(clone, {
       cacheBust: true,
-      pixelRatio: 2,
+      pixelRatio: 2, // change to 3 for sharper output
       backgroundColor: '#ffffff'
     });
 
     downloadDataUrl(dataUrl, 'news-template.png');
 
+    // Cleanup
+    exportHost.remove();
+
   } catch (err) {
     console.error("PNG export failed:", err);
-
-    // SHOW REAL ERROR MESSAGE
     alert("Download failed:\n\n" + (err?.message || err));
-
   } finally {
     btn.disabled = false;
     btn.textContent = "Download PNG";
